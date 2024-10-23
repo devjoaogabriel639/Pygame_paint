@@ -1,0 +1,91 @@
+ pygame as pyg
+import numpy as np
+import sys
+import pyautogui as pya
+import time
+
+# Inicialização do Pygame
+pyg.init()
+
+destino = [0, 0]  # Lista para destino do Pincel
+
+# Definição das dimensões do mapa Arrays
+largura, altura = 5, 5
+
+# Definindo as cores
+cor_vermelha = (139, 0, 0)  # (R, G, B) -> Vermelho: 255, Verde: 0, Azul: 0
+cor_verde = (0, 255, 0)  # (R, G, B) -> Verde: 0, Vermelho: 255, Azul: 0
+cor_branca = (255, 255, 255)  # (R, G, B) -> Branco: 255, Verde: 255, Azul: 255
+
+# Criando uma lista que contem Arrays bidimensionais para representar os pixeis
+lista_arrays = []
+array_mapa1 = np.full((5, 5, 3), cor_vermelha, dtype=np.uint8)  # Multiplica por 50
+array_mapa1[1, 1] = cor_verde  # Definindo um pixel verde no primeiro Array
+
+array_mapa2 = np.full((largura * 50, altura * 50, 3), cor_verde, dtype=np.uint8)  # Multiplica por 50
+
+# Fazendo o slicing para que o ponto 0 do array se torne o meio
+meio_largura = largura * 50 // 2
+
+lista_arrays.append(array_mapa1)
+
+# Criando a janela para exibir as imagens
+tamanho_janela = largura * 100, altura * 100  # Definindo o tamanho da janela (100 pixels por quadrado)
+janela = pyg.display.set_mode(tamanho_janela)  # Convertendo em janela PY
+
+# Criando o array branco com tamanho 500x500
+array_branco = np.full((500, 500, 3), cor_branca, dtype=np.uint8)
+
+# Exibindo os pixels dos Arrays na janela
+for i, mapa in enumerate(lista_arrays):
+    Imagem1 = pyg.surfarray.make_surface(array_branco)  # Cria a superfície para o array branco
+    janela.blit(Imagem1, (0, 0))  # Colocando o array branco na posição (0, 0)
+    imagem = pyg.surfarray.make_surface(array_mapa1)  # Cria a superfície para o array mapa
+    blit = janela.blit(imagem, tuple(destino))  # Desenha a imagem na posição correspondente
+    pyg.display.flip()  # Atualiza a tela
+
+# Mantendo a janela aberta
+running = True
+while running:
+    for event in pyg.event.get():
+        if event.type == pyg.QUIT:
+            running = False
+
+    # Armazenando o valor da função em uma variável
+    foco_mouse = pyg.mouse.get_focused()
+
+    # Loop para verificar se o mouse_focused é True
+    #  while foco_mouse == True:
+    #  print("o jogo vai começar!!!")
+    mouse_x, mouse_y = pyg.mouse.get_pos()
+
+
+    # Chamava a função loop
+
+    lista_posições = []  # Lista para armazenar as posições
+    while foco_mouse == True:
+        # Atualiza a variável destino com as coordenadas do mouse
+
+        destino[0] = mouse_x
+
+        destino[1] = mouse_y
+
+
+        # Adiciona as posições à lista
+        lista_posições.append((destino[0], destino[1]))
+        # Desenha a imagem na nova posição
+        imagem = pyg.surfarray.make_surface(array_mapa1)
+        janela.blit(imagem, tuple(destino))
+        pyg.display.flip()
+
+        mouse_x, mouse_y = pyg.mouse.get_pos()
+
+        # Verifica se o mouse ainda está focado
+        foco_mouse = pyg.mouse.get_focused()
+
+        # Obtém as coordenadas do mouse novamente após o blit
+        mouse_x, mouse_y = pyg.mouse.get_pos()
+
+        pyg.display.flip()
+pyg.quit()  # Encerrando o Pygame
+sys.exit()  # #Encerra o programa
