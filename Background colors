@@ -1,13 +1,12 @@
 import pygame as pyg
 import numpy as np
 import sys
-#import time
 
 # Inicialização do Pygame
 pyg.init()
 destino = [0, 0]
 medida_tela = (500, 500)
-pos_fundo=(0,0)
+pos_fundo = (0, 0)
 lista_arrays = []
 cores_fundo = []
 contador_click = 0
@@ -17,64 +16,31 @@ janela = pyg.display.set_mode(tamanho_janela)  # Convertendo em janela PY
 # Definição das dimensões do mapa Arrays
 largura, altura = 5, 5
 
-# Array que representa o fundo da Janela Pygame
-array_fundo = np.full((5, 5, 3), (50, 50, 50), dtype=np.uint8)
-
-array_fundoSalvo = pyg.surfarray.make_surface(array_fundo)
-
-# converte Array_fundo pra superfície pygame
-janela.blit(array_fundoSalvo, (0, 0))
-# cola o Array convertido no fundo da tela
-pyg.mouse.get_focused()
-# Verifica se o mouse está na janela
-pyg.mouse.get_rel()
-# Verifica a posição relativa
-pyg.display.flip()
-
 # Definindo as cores
 cor_vermelha = (139, 0, 0)  # (R, G, B) -> Vermelho: 255, Verde: 0, Azul: 0
 cor_verde = (0, 255, 0)  # (R, G, B) -> Verde: 0, Vermelho: 255, Azul: 0
 cor_branca = (255, 255, 255)  # (R, G, B) -> Branco: 255, Verde: 255, Azul: 255
 
-array_mapa1 = np.full((500, 500, 3), cor_vermelha, dtype=np.uint8)  # Multiplica por 50
-array_mapa1[1, 1] = cor_verde  # Definindo um pixel verde no primeiro Array
+# Criando arrays com shape (2, 2, 3)
+array_mapa1 = np.full((2, 2, 3), cor_vermelha, dtype=np.uint8)  # 2D
+array_mapa2 = np.full((2, 2, 3), cor_verde, dtype=np.uint8)  # 2D
+array_branco = np.full((2, 2, 3), cor_branca, dtype=np.uint8)  # 2D
 
-array_mapa2 = np.full((500, 500, 3), cor_verde, dtype=np.uint8)  # Multiplica por 50
-
-# Fazendo o slicing para que o ponto 0 do array se torne o meio
-meio_largura = largura * 50 // 2
-
-lista_arrays.append(array_mapa1)
-
-# Criando a janela para exibir as imagens
-tamanho_janela = largura * 100, altura * 100  # Definindo o tamanho da janela (100 pixels por quadrado)
-janela = pyg.display.set_mode(tamanho_janela)  # Convertendo em janela PY
-
-# Criando o array branco com tamanho 500x500
-array_branco = np.full((500, 500, 3), cor_branca, dtype=np.uint8)
-
+# Criando uma lista de arrays (cores_fundo)
 cores_fundo = [array_mapa1, array_mapa2, array_branco]
 
-# Função para atualizar o fundo
-def atualizar_fundo():
-    fundo = pyg.surfarray.make_surface(array_fundo)
-    # converte Array_mapa2 pra superfície pygame
-    janela.blit(array_fundoSalvo, (0, 0))
-    # cola o Array convertido em "destino"
-    pyg.mouse.get_focused()
-    # Verifica se o mouse está na janela
-    pyg.mouse.get_rel()
-    # Verifica a posição relativa
-    pyg.display.flip()
-    # Atualiza a tela
-    return array_fundoSalvo
 
 # Função para desenhar o mapa
 def desenha_mapa(mapa, destino):
-    # Converte o array do mapa para uma superfície Pygame
-    superficie_mapa = pyg.surfarray.make_surface(mapa)
-    janela.blit(superficie_mapa, tuple(destino))
+    # Criando uma superfície Pygame a partir do array NumPy
+    superficie = pyg.surfarray.make_surface(mapa)
+    # Redimensionando a superfície para a tela
+    superficie = pyg.transform.scale(superficie, (500, 500))
+    janela.blit(superficie, tuple(destino))
     pyg.display.flip()
+
+# Criando uma lista invertida de cores_fundo
+lista_invertida = reversed(cores_fundo)
 
 # Loop principal do jogo
 running = True
@@ -84,11 +50,13 @@ while running:
             running = False
         elif event.type == pyg.MOUSEBUTTONDOWN:
             contador_click += 1
-        tamanho_total=len(cores_fundo)
-            # Draw the image based on the click count
+        tamanho_total = len(cores_fundo)
+        # Draw the image based on the click count
         if contador_click <= len(cores_fundo):
-                # contador_click -= 1
             desenha_mapa(cores_fundo[contador_click - 1], destino)
+        if tamanho_total == contador_click:
+            # Limpa o contador de cliques reiniciando o loop
+            contador_click = 0
 
     # Verifica se o mouse está focado
     foco_mouse = pyg.mouse.get_focused()
