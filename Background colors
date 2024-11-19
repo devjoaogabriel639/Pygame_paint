@@ -39,9 +39,6 @@ def desenha_mapa(mapa, destino):
     janela.blit(superficie, tuple(destino))
     pyg.display.flip()
 
-# Criando uma lista invertida de cores_fundo
-lista_invertida = reversed(cores_fundo)
-
 # Loop principal do jogo
 running = True
 while running:
